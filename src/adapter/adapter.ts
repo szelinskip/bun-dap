@@ -1544,12 +1544,16 @@ export class BunDebugAdapter {
         const start = args.start ?? 0;
         const count = args.count ?? all.length;
         const page = all.slice(start, start + count);
-        const vars: DebugProtocol.Variable[] = page.map((p) => ({
-            name: p.name,
-            value: formatRemoteObject(p.value),
-            variablesReference: p.value?.objectId ? this.objectRefs.create({ objectId: p.value.objectId }) : 0,
-            type: p.value?.type,
-        }));
+        const vars: DebugProtocol.Variable[] = page.map((p) => {
+            const variable = {
+                name: p.name,
+                value: formatRemoteObject(p.value),
+                variablesReference: p.value?.objectId ? this.objectRefs.create({ objectId: p.value.objectId }) : 0,
+                type: p.value?.type,
+            };
+            return variable;
+        });
+
         // Advertise indexedVariables on each returned child that itself has an
         // objectId (hence children), so the client pages ITS children. The count
         // is fetched per expandable child; this is N fetches only for children the
